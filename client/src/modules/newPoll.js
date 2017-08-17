@@ -1,0 +1,5 @@
+import PollApi from '../api/polls'
+
+export const NEW_POLL_POST_REQUEST = 'NEW_POLL_POST_REQUEST'
+export const NEW_POLL_POST_SUCCESS = 'NEW_POLL_POST_SUCCESS'
+export const NEW_POLL_POST_FAILURE = 'NEW_POLL_POST_FAILURE'
