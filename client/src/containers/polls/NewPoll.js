@@ -1,5 +1,10 @@
 import React, { Component } from 'react'
-
+import { push } from 'react-router-redux'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import {
+  postNewPoll,
+} from '../../modules/newPoll'
 
 class NewPoll extends Component {
 
@@ -23,7 +28,21 @@ class NewPoll extends Component {
   }
 
   handleSubmit() {
-    console.log('submitting')
+    const {question, options, author} = this.state
+    const opts = []
+    options.split(',')
+      .map(o => o.trim())
+      .forEach(o => opts.push({
+        name: o,
+        votes: 0,
+      }))
+    const poll = {
+      question,
+      author,
+      options: opts
+    }
+    this.props.postNewPoll(poll)
+    this.props.changePage('/polls/all')
   }
 
   render() {
@@ -33,7 +52,7 @@ class NewPoll extends Component {
     return (
       <div>
         <div>
-          <label for='question'>Question: </label>
+          <label htmlFor='question'>Question: </label>
           <input
             type='text'
             name='question'
@@ -42,7 +61,7 @@ class NewPoll extends Component {
           />
         </div>
         <div>
-          <label for='options'>Options (comma split): </label>
+          <label htmlFor='options'>Options (comma split): </label>
           <input
             type='text'
             name='options'
@@ -51,7 +70,7 @@ class NewPoll extends Component {
           />
         </div>
         <div>
-          <label for='author'>Author: </label>
+          <label htmlFor='author'>Author: </label>
           <input
             type='text'
             name='author'
@@ -67,4 +86,12 @@ class NewPoll extends Component {
   }
 }
 
-export default NewPoll
+const mapDispatchToProps = dispatch => bindActionCreators({
+  changePage: (ref) => push(ref),
+  postNewPoll,
+}, dispatch)
+
+export default connect(
+  null,
+  mapDispatchToProps
+)(NewPoll)

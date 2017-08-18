@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { bindActionCreators } from 'redux'
+import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import {
   fetchAllPolls,
@@ -31,7 +32,9 @@ class PollList extends Component {
           <ul>
             {polls.map(poll => {
                 return (
-                  <li>{JSON.stringify(poll)}</li>
+                  <li key={poll._id}>
+                    <Link to={`/polls/id/${poll._id}`}>{poll.question}</Link>
+                  </li>
                 )
               })
             }
