@@ -16,9 +16,15 @@ class SinglePoll extends Component {
       author: null,
       options: null,
       id: null,
+      fetching: false,
     }
 
+    const { socket, incrementVote } = this.props
+
     this.handleVote = this.handleVote.bind(this)
+    socket.on('pollUpdate', data => {
+      incrementVote(data)
+    })
   }
 
   componentWillReceiveProps(nextProps) {
@@ -32,24 +38,23 @@ class SinglePoll extends Component {
   popState = (props) => {
     const { id } = props.match.params
     const { polls } = props
-    const currPoll = polls.find(p => p._id === id)
-    if (currPoll) {
+    if (Object.keys(polls).includes(id)) {
       this.setState({
-        question: currPoll.question,
-        author: currPoll.author,
-        options: currPoll.options,
-        id: currPoll._id
+        question: polls[id].question,
+        author: polls[id].author,
+        options: polls[id].options,
+        id: polls[id]._id
       })
-    } else {
+    } else if (!this.state.fetching){
       this.props.fetchOnePoll(id)
+      this.setState({fetching: true})
     }
   }
 
   handleVote(event) {
     const optId = event.target.id
     const pollId = this.state.id
-
-
+    this.props.socket.emit('increment', {poll: pollId, opt: optId})
   }
 
   render() {
@@ -85,6 +90,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => bindActionCreators({
   fetchOnePoll,
+  incrementVote,
 }, dispatch)
 
 export default connect(

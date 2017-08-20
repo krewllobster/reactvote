@@ -6,22 +6,20 @@ import {
   fetchAllPolls,
 } from '../../modules/allPolls'
 
-import io from 'socket.io-client'
-const socket = io()
-
 class PollList extends Component {
 
   constructor(props) {
     super(props)
   }
 
-  componentDidMount() {
+  componentWillMount() {
     this.props.fetchAllPolls()
   }
 
   render() {
 
     const {polls, fetching} = this.props
+    const ids = Object.keys(polls)
 
     return (
       <div>
@@ -30,7 +28,8 @@ class PollList extends Component {
           <div>getting polls</div>
         ) : (
           <ul>
-            {polls.map(poll => {
+            {ids.map(id => {
+                const poll = polls[id]
                 return (
                   <li key={poll._id}>
                     <Link to={`/polls/id/${poll._id}`}>{poll.question}</Link>

@@ -14,6 +14,7 @@ const db = mongoose.connect(process.env.DATABASE_URL, {useMongoClient: true})
 const Poll = require('./db/pollSchema')
 
 
+
 const port = process.env.PORT || 5000
 
 const server = app.listen(port)
@@ -23,6 +24,7 @@ app.use(bodyParser.json())
 
 app.get('/api/polls/all', (req, res) => {
   Poll.find({}).then(polls => {
+    polls.map(p => p.options.map(o => o.toString()))
     res.json(polls)
   }).catch(err => {
     console.log(err)
@@ -30,12 +32,9 @@ app.get('/api/polls/all', (req, res) => {
 })
 
 app.get('/api/polls/id/:id', (req, res) => {
-  Poll.find({_id: req.params.id}).then(poll => {
-    console.log(poll[0])
-    res.json(poll[0])
-  }).catch(err => {
-    console.log(err)
-  })
+  Poll.findOne({_id: req.params.id})
+    .then(doc => res.json({[doc.id]: doc}))
+    .catch(err => console.log(err))
 })
 
 app.post('/api/polls/new', (req, res) => {
@@ -55,7 +54,17 @@ app.get('*', (req, res) => {
 
 io.on('connection', socket => {
   console.log('client connected')
-  socket.emit('message', {data: 'welcome to a socket'})
+  socket.on('increment', data => {
+    Poll.findOneAndUpdate(
+      {'options._id': data.opt},
+      {$inc: {'options.$.votes': 1}},
+      {new: true}
+    )
+      .then(data => {
+        io.sockets.emit('pollUpdate', data)
+      })
+      .catch(err => console.log(err))
+  })
 })
 
 console.log(`listening on ${port}`)

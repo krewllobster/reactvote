@@ -9,7 +9,7 @@ export const ONE_POLL_FETCH_FAILURE = 'ONE_POLL_FETCH_FAILURE'
 export const INC_VOTE = 'INC_VOTE'
 
 const initialState = {
-  polls: [],
+  polls: {},
   fetching: false,
 }
 
@@ -44,7 +44,7 @@ export default (state = initialState, action) => {
       return {
         ...state,
         fetching: false,
-        polls: [...state.polls, action.payload.poll]
+        polls: {...state.polls, ...action.payload}
       }
 
     case ONE_POLL_FETCH_FAILURE:
@@ -56,12 +56,21 @@ export default (state = initialState, action) => {
     case INC_VOTE:
       return {
         ...state,
-        //return list of polls with the one vote updated using
-        //immutability-helper
+        polls: {...state.polls, [action.id]: action.poll}
       }
 
     default:
       return state
+  }
+}
+
+export const incrementVote = (poll) => {
+  return dispatch => {
+    dispatch({
+      type: INC_VOTE,
+      id: poll._id,
+      poll: poll,
+    })
   }
 }
 
@@ -72,11 +81,10 @@ export const fetchOnePoll = (id) => {
     })
 
     return PollApi.fetchOnePoll(id)
-      .then(data => {
-        console.log(data.data)
+      .then(res => {
         dispatch({
           type: ONE_POLL_FETCH_SUCCESS,
-          payload: data.data
+          payload: res.data,
         })
       })
       .catch(err => {
@@ -96,9 +104,14 @@ export const fetchAllPolls = () => {
 
     return PollApi.fetchAllPolls()
       .then(data => {
+        let obj = data.reduce((obj, val) => {
+          obj[val._id] = val
+          return obj
+        }, {})
+        console.log(obj)
         dispatch({
           type: ALL_POLL_FETCH_SUCCESS,
-          payload: data
+          payload: obj
         })
       })
       .catch(err => {
