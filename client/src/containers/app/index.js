@@ -35,7 +35,7 @@ const App = () => (
     <Header />
 
     <main>
-      <Route exact path="/" component={PollList} />
+      <Route exact path="/" component={PollListSocket} />
       <Route exact path="/login" component={Login} />
       <Route exact path="/polls/all" render={PollListSocket} />
       <Route exact path="/polls/new" render={NewPollSocket} />
