@@ -37,6 +37,8 @@ export const setLogin = (auth) => {
       name: auth.name,
       id: auth.id
     })
+    localStorage.setItem('krewll-vote-login',
+      JSON.stringify({name: auth.name, id: auth.id}))
   }
 }
 

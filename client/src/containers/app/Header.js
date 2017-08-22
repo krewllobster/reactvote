@@ -1,41 +1,47 @@
 import React, { Component } from 'react'
-import { Link } from 'react-router-dom'
 import { push } from 'react-router-redux'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { logout } from '../../modules/auth'
+import { logout, setLogin } from '../../modules/auth'
 import { Navbar, Nav, NavItem } from 'react-bootstrap'
 
 class Header extends Component {
+
+  componentWillMount() {
+    if (!this.props.auth.id) {
+      const storedAuth = JSON.parse(localStorage.getItem('krewll-vote-login'))
+      if (storedAuth) {
+        this.props.setLogin(storedAuth)
+      }
+    }
+  }
 
   logout = () => {
     this.props.logout()
     this.props.changePage('/login')
   }
 
-  navItems = (authed) => {
+  navItems = (authed, chpg) => {
     if (authed) {
       return [
-        {path: '/polls/all', text: 'All Polls', onClick: null},
-        {path: '/polls/new', text: 'New Poll', onClick: null},
-        {path: '/login', text: 'Logout', onClick: () => this.logout()}
+        {text: 'All Polls', onClick: () => chpg('/polls/all')},
+        {text: 'New Poll', onClick: () => chpg('/polls/new')},
+        {text: 'Logout', onClick: () => this.logout()}
       ]
     } else {
       return [
-        {path: '/polls/all', text: 'All Polls', onClick: null},
-        {path: '/login', text: 'Login'}
+        {text: 'All Polls', onClick: () => chpg('/polls/all')},
+        {text: 'Login', onClick: () => chpg('/login')}
       ]
     }
   }
 
   render() {
-
+    const {changePage} = this.props
     const {authed} = this.props.auth
-    const navItems = this.navItems(authed)
-    const headerStyle = {width: '100%', height: '40px', backgroundColor: 'lavender', color: 'white'}
-    const itemStyle = {padding: '10px', marginLeft: '20px', marginRight: '20px'}
+    const navItems = this.navItems(authed, changePage)
     return (
-      <Navbar staticTop fluid>
+      <Navbar staticTop fluid collapseOnSelect>
         <Navbar.Header>
           <Navbar.Brand>
             Krewll-Vote
@@ -46,8 +52,8 @@ class Header extends Component {
           <Nav>
             {navItems.map(i => {
               return (
-                <NavItem key={i.path}>
-                  <Link to={i.path} onClick={i.onClick}>{i.text}</Link>
+                <NavItem key={i.text} onClick={i.onClick}>
+                  {i.text}
                 </NavItem>
               )
             })}
@@ -65,6 +71,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => bindActionCreators({
   changePage: (ref) => push(ref),
+  setLogin,
   logout,
 }, dispatch)
 

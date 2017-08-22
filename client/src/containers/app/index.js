@@ -1,5 +1,5 @@
-import React, { Component } from 'react'
-import { Route, Link, Redirect } from 'react-router-dom'
+import React from 'react'
+import { Route } from 'react-router-dom'
 import Login from '../login'
 import PollList from '../polls/PollList'
 import NewPoll from '../polls/NewPoll'
@@ -30,18 +30,20 @@ const NewPollSocket = (props) => {
   )
 }
 
-const App = () => (
-  <div>
-    <Header />
+const App = () => {
 
-    <main>
-      <Route exact path="/" component={PollListSocket} />
-      <Route exact path="/login" component={Login} />
-      <Route exact path="/polls/all" render={PollListSocket} />
-      <Route exact path="/polls/new" render={NewPollSocket} />
-      <Route exact path="/polls/id/:id" render={SinglePollSocket} />
-    </main>
-  </div>
-)
+  return (
+    <div>
+      <Header />
+
+      <main>
+        <Route exact path="/" component={PollListSocket} />
+        <Route exact path="/login" component={Login} />
+        <Route exact path="/polls/all" render={PollListSocket} />
+        <Route exact path="/polls/new" render={NewPollSocket} />
+        <Route exact path="/polls/id/:id" render={SinglePollSocket} />
+      </main>
+    </div>
+)}
 
 export default App

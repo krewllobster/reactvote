@@ -3,7 +3,7 @@ import { push } from 'react-router-redux'
 import FacebookLogin from 'react-facebook-login'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import {Jumbotron, Panel } from 'react-bootstrap'
+import { Jumbotron } from 'react-bootstrap'
 import {
   setLogin,
 } from '../../modules/auth'
@@ -11,8 +11,8 @@ import {
 class Login extends Component {
 
   facebookResponse = (res) => {
-    this.props.setLogin(res)
     if (res.id) {
+      this.props.setLogin(res)
       this.props.changePage('/polls/all')
     }
   }

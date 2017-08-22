@@ -34,7 +34,7 @@ class PollList extends Component {
     const {socket, upsertPoll} = this.props
 
     socket.on('addPoll', data => {
-      upsertPoll({id: data._id, poll: data})
+      upsertPoll(data)
     })
   }
 
@@ -48,7 +48,7 @@ class PollList extends Component {
     const allPolls = Object.values(polls)
 
     return (
-      <Jumbotron style={{paddingTop: '20', marginTop: '0'}}>
+      <Jumbotron style={{paddingTop: '20px', marginTop: '0'}}>
         <h3 style={{textAlign: 'center'}}>All of the Polls!</h3>
         {fetching
           ? null

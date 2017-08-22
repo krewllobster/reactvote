@@ -42,8 +42,8 @@ app.get('/api/polls/id/:id', (req, res) => {
 app.post('/api/polls/new', (req, res) => {
   const poll = new Poll(req.body)
   poll.save()
-    .then(res => {
-      console.log(res)
+    .then(data => {
+      res.json(data)
     })
     .catch(err => {
       console.log(err)

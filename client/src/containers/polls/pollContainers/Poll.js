@@ -21,7 +21,6 @@ const OptionList = (props) => {
 const OptionResults = (props) => {
   const {options} = props
   const totalVotes = options.reduce((acc, val) => acc + val.votes, 0)
-  console.log(totalVotes)
   return (
     <div style={{maxWidth: '500px', margin: 'auto'}}>
       {options.map(o => {

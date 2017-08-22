@@ -42,13 +42,15 @@ class NewPoll extends Component {
       options: opts
     }
     this.props.postNewPoll(poll)
-      .then(data => console.log(data))
-    // this.props.changePage('/polls/all')
+      .then(data => {
+        this.props.socket.emit('newPoll', data)
+        this.props.changePage(`/polls/id/${data._id}`)
+      })
   }
 
   render() {
 
-    const {question, options, author} = this.state
+    const {question, options} = this.state
 
     return (
       <div>
@@ -74,7 +76,9 @@ class NewPoll extends Component {
           <label htmlFor='author'>Author: {this.state.author}</label>
         </div>
         <div>
-          <button onClick={this.handleSubmit}>Create Poll</button>
+          <button
+            disabled={question.trim().length === 0 || options.length === 0}
+            onClick={this.handleSubmit}>Create Poll</button>
         </div>
       </div>
     )

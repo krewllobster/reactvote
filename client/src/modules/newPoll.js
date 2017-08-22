@@ -1,5 +1,6 @@
 import PollApi from '../api/polls'
 import io from 'socket.io-client'
+import axios from 'axios'
 const socket = io()
 
 export const NEW_POLL_POST_REQUEST = 'NEW_POLL_POST_REQUEST'
@@ -37,24 +38,23 @@ export default (state = initialState, action) => {
   }
 }
 
-export const postNewPoll = (poll) => {
-  return dispatch => {
+export const postNewPoll = (poll) => (dispatch) => {
+  return new Promise((resolve, reject) => {
     dispatch ({
       type: NEW_POLL_POST_REQUEST,
     })
 
-    return PollApi.createPoll(poll)
+    axios.post('/api/polls/new', poll)
       .then(res => {
         dispatch({
           type: NEW_POLL_POST_SUCCESS,
           payload: res,
         })
-        return res
+        resolve(res.data)
       })
       .catch(err => {
-        dispatch({
-          type: NEW_POLL_POST_FAILURE,
-        })
+        dispatch({type: NEW_POLL_POST_FAILURE})
+        reject(err)
       })
-  }
+  })
 }

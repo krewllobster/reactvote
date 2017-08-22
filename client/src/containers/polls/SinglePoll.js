@@ -53,7 +53,7 @@ class SinglePoll extends Component {
     if (poll) {
       this.setState({poll, message: null})
     } else {
-      this.setState({message: 'no such poll'})
+      this.setState({message: 'This poll has been deleted'})
     }
   }
 
@@ -61,14 +61,10 @@ class SinglePoll extends Component {
     const pollId = this.props.match.params.id
     const userId = this.props.auth.id
     const voted = JSON.parse(localStorage.getItem('krewll-vote')) || []
-    if (voted.includes(pollId)) {
-      this.setState({error: 'You have already cast a vote. Click to see results'})
-    } else {
-      voted.push(pollId)
-      localStorage.setItem('krewll-vote', JSON.stringify(voted))
-      this.props.socket.emit('increment', {poll: pollId, opt: optId})
-      this.setState({voted: true})
-    }
+    voted.push(pollId)
+    localStorage.setItem('krewll-vote', JSON.stringify(voted))
+    this.props.socket.emit('increment', {poll: pollId, opt: optId})
+    this.setState({voted: true})
   }
 
   render() {
