@@ -6,6 +6,7 @@ import { connect } from 'react-redux'
 import {Jumbotron, ListGroup, ListGroupItem} from 'react-bootstrap'
 import {
   fetchAllPolls,
+  upsertPoll,
 } from '../../modules/allPolls'
 
 const Polls = ({polls, changePage}) => {
@@ -29,6 +30,12 @@ class PollList extends Component {
 
   constructor(props) {
     super(props)
+
+    const {socket, upsertPoll} = this.props
+
+    socket.on('addPoll', data => {
+      upsertPoll({id: data._id, poll: data})
+    })
   }
 
   componentWillMount() {
@@ -62,6 +69,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => bindActionCreators({
   changePage: (ref) => push(ref),
   fetchAllPolls,
+  upsertPoll,
 }, dispatch)
 
 export default connect(

@@ -14,7 +14,7 @@ class NewPoll extends Component {
     this.state = {
       question: '',
       options: '',
-      author: this.props.auth.name || '',
+      author: this.props.auth.name || 'anonymous',
     }
 
     this.handleUpdate = this.handleUpdate.bind(this)
@@ -42,7 +42,8 @@ class NewPoll extends Component {
       options: opts
     }
     this.props.postNewPoll(poll)
-    this.props.changePage('/polls/all')
+      .then(data => console.log(data))
+    // this.props.changePage('/polls/all')
   }
 
   render() {

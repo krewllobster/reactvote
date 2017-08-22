@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 import Poll from './pollContainers/Poll'
 import {
   fetchOnePoll,
-  incrementVote,
+  upsertPoll,
 } from '../../modules/allPolls'
 
 class SinglePoll extends Component {
@@ -20,10 +20,10 @@ class SinglePoll extends Component {
       voted: false,
     }
 
-    const { socket, incrementVote } = this.props
+    const { socket, upsertPoll } = this.props
 
     socket.on('pollUpdate', data => {
-      incrementVote(data)
+      upsertPoll(data)
     })
 
     this.handleVote = this.handleVote.bind(this)
@@ -108,7 +108,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => bindActionCreators({
   fetchOnePoll,
-  incrementVote,
+  upsertPoll,
 }, dispatch)
 
 export default connect(

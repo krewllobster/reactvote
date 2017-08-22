@@ -5,7 +5,7 @@ import {Option} from './Option'
 const OptionList = (props) => {
   const {options, handleVote} = props
   return (
-    <ListGroup style={{margin: '15px'}}>
+    <ListGroup style={{margin: 'auto', maxWidth: '400px'}}>
       {options.map(o => {
         return <Option
                   key={o._id}
@@ -30,7 +30,8 @@ const OptionResults = (props) => {
         return (
           <div key={o._id}>
             <b>{o.votes}</b> votes for: {o.name}
-            <ProgressBar active now={progress} label={progress+'%'} />
+            <ProgressBar active now={progress}
+              label={progress > 0 ? progress+'%' : ''} />
           </div>
         )
       })}
@@ -46,7 +47,7 @@ class Poll extends Component {
 
     return (
       <Jumbotron style={{padding: '15px', textAlign: 'center'}}>
-        <h2>{author} asks: {question}</h2>
+        <p>{author} asks: {question}</p>
         {voted
           ? <OptionResults options={options} />
           : <OptionList options={options} handleVote={handleVote} />

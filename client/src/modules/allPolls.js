@@ -6,7 +6,7 @@ export const ALL_POLL_FETCH_FAILURE = 'ALL_POLL_FETCH_FAILURE'
 export const ONE_POLL_FETCH_REQUEST = 'ONE_POLL_FETCH_REQUEST'
 export const ONE_POLL_FETCH_SUCCESS = 'ONE_POLL_FETCH_SUCCESS'
 export const ONE_POLL_FETCH_FAILURE = 'ONE_POLL_FETCH_FAILURE'
-export const INC_VOTE = 'INC_VOTE'
+export const UPSERT_POLL = 'UPSERT_POLL'
 
 const initialState = {
   polls: {},
@@ -54,7 +54,7 @@ export default (state = initialState, action) => {
         fetching: false,
       }
 
-    case INC_VOTE:
+    case UPSERT_POLL:
       return {
         ...state,
         polls: {...state.polls, [action.id]: action.poll}
@@ -65,10 +65,10 @@ export default (state = initialState, action) => {
   }
 }
 
-export const incrementVote = (poll) => {
+export const upsertPoll = (poll) => {
   return dispatch => {
     dispatch({
-      type: INC_VOTE,
+      type: UPSERT_POLL,
       id: poll._id,
       poll: poll,
     })

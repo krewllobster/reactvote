@@ -50,7 +50,7 @@ app.post('/api/polls/new', (req, res) => {
 })
 
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname+'/client/public/index.html'))
+  res.sendFile(path.join(__dirname+'/client/build/index.html'))
 })
 
 io.on('connection', socket => {
@@ -65,6 +65,9 @@ io.on('connection', socket => {
         io.sockets.emit('pollUpdate', data)
       })
       .catch(err => console.log(err))
+  })
+  socket.on('newPoll', data => {
+    io.sockets.emit('addPoll', data)
   })
 })
 

@@ -1,4 +1,6 @@
 import PollApi from '../api/polls'
+import io from 'socket.io-client'
+const socket = io()
 
 export const NEW_POLL_POST_REQUEST = 'NEW_POLL_POST_REQUEST'
 export const NEW_POLL_POST_SUCCESS = 'NEW_POLL_POST_SUCCESS'
@@ -47,6 +49,7 @@ export const postNewPoll = (poll) => {
           type: NEW_POLL_POST_SUCCESS,
           payload: res,
         })
+        return res
       })
       .catch(err => {
         dispatch({
