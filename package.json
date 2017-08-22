@@ -2,6 +2,7 @@
   "name": "voteserver",
   "version": "1.0.0",
   "description": "",
+  "repository": "https://github.com/krewllobster/reactvote.git",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
