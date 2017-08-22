@@ -21,6 +21,7 @@ const server = app.listen(port)
 const io = require('socket.io').listen(server)
 
 app.use(bodyParser.json())
+app.use(express.static(path.join(__dirname, 'client/build')))
 
 app.get('/api/polls/all', (req, res) => {
   Poll.find({}).then(polls => {
