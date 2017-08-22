@@ -14,7 +14,7 @@ class NewPoll extends Component {
     this.state = {
       question: '',
       options: '',
-      author: '',
+      author: this.props.auth.name || '',
     }
 
     this.handleUpdate = this.handleUpdate.bind(this)
@@ -70,13 +70,7 @@ class NewPoll extends Component {
           />
         </div>
         <div>
-          <label htmlFor='author'>Author: </label>
-          <input
-            type='text'
-            name='author'
-            onChange={this.handleUpdate}
-            value={author}
-          />
+          <label htmlFor='author'>Author: {this.state.author}</label>
         </div>
         <div>
           <button onClick={this.handleSubmit}>Create Poll</button>
@@ -86,12 +80,16 @@ class NewPoll extends Component {
   }
 }
 
+const mapStateToProps = state => ({
+  auth: state.auth,
+})
+
 const mapDispatchToProps = dispatch => bindActionCreators({
   changePage: (ref) => push(ref),
   postNewPoll,
 }, dispatch)
 
 export default connect(
-  null,
+  mapStateToProps,
   mapDispatchToProps
 )(NewPoll)

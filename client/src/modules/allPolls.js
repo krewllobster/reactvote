@@ -11,6 +11,7 @@ export const INC_VOTE = 'INC_VOTE'
 const initialState = {
   polls: {},
   fetching: false,
+  userId: null,
 }
 
 export default (state = initialState, action) => {
@@ -44,7 +45,7 @@ export default (state = initialState, action) => {
       return {
         ...state,
         fetching: false,
-        polls: {...state.polls, ...action.payload}
+        polls: {...state.polls, ...action.poll},
       }
 
     case ONE_POLL_FETCH_FAILURE:
@@ -84,7 +85,7 @@ export const fetchOnePoll = (id) => {
       .then(res => {
         dispatch({
           type: ONE_POLL_FETCH_SUCCESS,
-          payload: res.data,
+          poll: res.data.poll,
         })
       })
       .catch(err => {
@@ -108,7 +109,6 @@ export const fetchAllPolls = () => {
           obj[val._id] = val
           return obj
         }, {})
-        console.log(obj)
         dispatch({
           type: ALL_POLL_FETCH_SUCCESS,
           payload: obj

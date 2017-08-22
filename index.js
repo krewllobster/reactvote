@@ -32,8 +32,9 @@ app.get('/api/polls/all', (req, res) => {
 })
 
 app.get('/api/polls/id/:id', (req, res) => {
+  const userId = req.connection.remoteAddress
   Poll.findOne({_id: req.params.id})
-    .then(doc => res.json({[doc.id]: doc}))
+    .then(doc => res.json({poll: {[doc.id]: doc}, userId}))
     .catch(err => console.log(err))
 })
 

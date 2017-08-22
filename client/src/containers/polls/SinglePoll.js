@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
+import { Link } from 'react-router-dom'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
+import Poll from './pollContainers/Poll'
 import {
   fetchOnePoll,
   incrementVote,
@@ -12,72 +14,86 @@ class SinglePoll extends Component {
     super(props)
 
     this.state = {
-      question: null,
-      author: null,
-      options: null,
-      id: null,
-      fetching: false,
+      poll: null,
+      message: 'loading',
+      error: null,
+      voted: false,
     }
 
     const { socket, incrementVote } = this.props
 
-    this.handleVote = this.handleVote.bind(this)
     socket.on('pollUpdate', data => {
       incrementVote(data)
     })
+
+    this.handleVote = this.handleVote.bind(this)
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.popState(nextProps)
-  }
+  componentWillMount() {
+    const {polls} = this.props
+    const {id} = this.props.match.params
+    const poll = polls[id]
 
-  componentDidMount() {
-    this.popState(this.props)
-  }
-
-  popState = (props) => {
-    const { id } = props.match.params
-    const { polls } = props
-    if (Object.keys(polls).includes(id)) {
-      this.setState({
-        question: polls[id].question,
-        author: polls[id].author,
-        options: polls[id].options,
-        id: polls[id]._id
-      })
-    } else if (!this.state.fetching){
+    if(!poll) {
       this.props.fetchOnePoll(id)
-      this.setState({fetching: true})
+    } else {
+      this.setState({poll, message: null})
+    }
+
+    const voted = JSON.parse(localStorage.getItem('krewll-vote')) || []
+    if (voted.includes(id)) {
+      this.setState({voted: true})
     }
   }
 
-  handleVote(event) {
-    const optId = event.target.id
-    const pollId = this.state.id
-    this.props.socket.emit('increment', {poll: pollId, opt: optId})
+  componentWillReceiveProps(nextProps) {
+    const {polls} = nextProps
+    const {id} = nextProps.match.params
+    const poll = polls[id]
+    if (poll) {
+      this.setState({poll, message: null})
+    } else {
+      this.setState({message: 'no such poll'})
+    }
+  }
+
+  handleVote(optId) {
+    const pollId = this.props.match.params.id
+    const userId = this.props.auth.id
+    const voted = JSON.parse(localStorage.getItem('krewll-vote')) || []
+    if (voted.includes(pollId)) {
+      this.setState({error: 'You have already cast a vote. Click to see results'})
+    } else {
+      voted.push(pollId)
+      localStorage.setItem('krewll-vote', JSON.stringify(voted))
+      this.props.socket.emit('increment', {poll: pollId, opt: optId})
+      this.setState({voted: true})
+    }
   }
 
   render() {
 
-    const {question, author, options} = this.state
+    const {poll, error, voted} = this.state
+    const path = this.props.location.pathname
+    const {question, options, author} = poll || false
 
     return (
       <div>
-        {question ? (
+        {poll ? (
           <div>
-            <div>Question: {question}</div>
-            <ol>
-              {options.map(o => {
-                return (
-                  <li key={o._id}>
-                    <div>{o.name} --- votes: {o.votes || '0'}</div>
-                    <button onClick={this.handleVote} id={o._id}>Vote!</button>
-                  </li>)
-              })}
-            </ol>
-            <div>Author: {author}</div>
+            <Poll
+              question={question}
+              author={author}
+              options={options}
+              handleVote={this.handleVote}
+              voted={voted}
+            />
+            {error
+              ? <Link to={`${path}/results`}>{error}</Link>
+              : null
+            }
           </div>
-        ) : <div>Loading</div>}
+        ) : <div>{this.state.message}</div>}
       </div>
     )
   }
@@ -86,6 +102,8 @@ class SinglePoll extends Component {
 const mapStateToProps = state => ({
   polls: state.allPolls.polls,
   fetching: state.allPolls.fetching,
+  auth: state.auth,
+  userId: state.allPolls.userId,
 })
 
 const mapDispatchToProps = dispatch => bindActionCreators({
