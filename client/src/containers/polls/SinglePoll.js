@@ -8,6 +8,7 @@ import {
   upsertPoll,
 } from '../../modules/allPolls'
 
+
 class SinglePoll extends Component {
 
   constructor(props) {
@@ -18,6 +19,7 @@ class SinglePoll extends Component {
       message: 'loading',
       error: null,
       voted: false,
+      votedFor: null,
     }
 
     const { socket, upsertPoll } = this.props
@@ -41,8 +43,9 @@ class SinglePoll extends Component {
     }
 
     const voted = JSON.parse(localStorage.getItem('krewll-vote')) || []
-    if (voted.includes(id)) {
-      this.setState({voted: true})
+    const didvote = voted.find(i => i.id === id)
+    if (didvote) {
+      this.setState({voted: true, votedFor: didvote.option})
     }
   }
 
@@ -60,16 +63,18 @@ class SinglePoll extends Component {
   handleVote(optId) {
     const pollId = this.props.match.params.id
     const userId = this.props.auth.id
+    const {options} = this.state.poll
+    const votedFor = options.find(o => o._id === optId).name
     const voted = JSON.parse(localStorage.getItem('krewll-vote')) || []
-    voted.push(pollId)
+    voted.push({id: pollId, option: votedFor})
     localStorage.setItem('krewll-vote', JSON.stringify(voted))
     this.props.socket.emit('increment', {poll: pollId, opt: optId})
-    this.setState({voted: true})
+    this.setState({voted: true, votedFor})
   }
 
   render() {
 
-    const {poll, error, voted} = this.state
+    const {poll, error, voted, votedFor} = this.state
     const path = this.props.location.pathname
     const {question, options, author} = poll || false
 
@@ -83,11 +88,8 @@ class SinglePoll extends Component {
               options={options}
               handleVote={this.handleVote}
               voted={voted}
+              votedFor={votedFor}
             />
-            {error
-              ? <Link to={`${path}/results`}>{error}</Link>
-              : null
-            }
           </div>
         ) : <div>{this.state.message}</div>}
       </div>

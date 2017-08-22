@@ -42,7 +42,7 @@ class Poll extends Component {
 
   render() {
 
-    const {question, author, options, handleVote, voted} = this.props
+    const {votedFor, question, author, options, handleVote, voted} = this.props
 
     return (
       <Jumbotron style={{padding: '15px', textAlign: 'center'}}>
@@ -51,6 +51,7 @@ class Poll extends Component {
           ? <OptionResults options={options} />
           : <OptionList options={options} handleVote={handleVote} />
         }
+        {voted && <p>You voted for: {votedFor}</p>}
       </Jumbotron>
     )
   }
